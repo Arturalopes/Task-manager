@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Gerenciador de Tarefas</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📋 Gerenciador de Tarefas</h1>
+
+    <div style="margin-bottom:20px;">
+
+        <a
+            href="/"
+            class="back-btn">
+
+            ← Voltar ao Calendário
+
+        </a>
+
+    </div>
+
+    <!-- DASHBOARD -->
+
+    <div class="stats">
+
+        <div class="card">
+
+            <strong>{{ total }}</strong>
+
+            <span>Total</span>
+
+        </div>
+
+        <div class="card">
+
+            <strong>{{ pending }}</strong>
+
+            <span>Pendentes</span>
+
+        </div>
+
+        <div class="card">
+
+            <strong>{{ completed }}</strong>
+
+            <span>Concluídas</span>
+
+        </div>
+
+    </div>
+
+    <!-- FORMULÁRIO -->
+
+    <form action="/add" method="POST">
+
+        <input
+            type="text"
+            name="title"
+            placeholder="Título da tarefa"
+            required>
+
+        <textarea
+            name="description"
+            placeholder="Descrição da tarefa"></textarea>
+
+        <input
+            type="date"
+            name="date">
+
+        <input
+            type="time"
+            name="time">
+
+        <label>
+
+            Cor da tarefa:
+
+        </label>
+
+        <input
+            type="color"
+            name="color"
+            value="#4f46e5">
+
+        <select name="category">
+
+            <option>Pessoal</option>
+
+            <option>Trabalho</option>
+
+            <option>Estudos</option>
+
+            <option>Saúde</option>
+
+            <option>Financeiro</option>
+
+            <option>Projetos</option>
+
+        </select>
+
+        <button type="submit">
+
+            Salvar tarefa
+
+        </button>
+
+    </form>
+
+    <!-- PESQUISA -->
+
+    <input
+        type="text"
+        id="search"
+        placeholder="🔍 Pesquisar tarefa...">
+
+    <!-- FILTROS -->
+
+    <div class="filters">
+
+        <a href="/tasks">
+
+            Todas
+
+        </a>
+
+        <a href="/tasks?filter=pending">
+
+            Pendentes
+
+        </a>
+
+        <a href="/tasks?filter=completed">
+
+            Concluídas
+
+        </a>
+
+        <a href="/tasks?filter=today">
+
+            Hoje
+
+        </a>
+
+        <a href="/tasks?filter=overdue">
+
+            Atrasadas
+
+        </a>
+
+    </div>
+
+    <!-- LISTA DE TAREFAS -->
+
+    {% if tasks %}
+
+        {% for task in tasks %}
+
+        <div
+            class="task {% if task['completed'] == 1 %}done{% endif %}"
+            style="
+                border-left:
+                8px solid
+                {{ task['color'] }};
+            ">
+
+            <div class="task-info">
+
+                <h3>
+
+                    {{ task['title'] }}
+
+                </h3>
+
+                {% if task['description'] %}
+
+                <p>
+
+                    {{ task['description'] }}
+
+                </p>
+
+                {% endif %}
+
+                <small>
+
+                    📅 {{ task['task_date'] }}
+
+                </small>
+
+                <br>
+
+                <small>
+
+                    ⏰ {{ task['task_time'] }}
+
+                </small>
+
+                <br>
+
+                <small>
+
+                    📂 {{ task['category'] }}
+
+                </small>
+
+                {% if task['completed'] == 1 %}
+
+                    <br>
+
+                    <small>
+
+                        ✅ Concluída
+
+                    </small>
+
+                {% endif %}
+
+            </div>
+
+            <div class="actions">
+
+                {% if task['completed'] == 0 %}
+
+                    <a
+                        href="/complete/{{ task['id'] }}"
+                        title="Concluir">
+
+                        ✔
+
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="/undo/{{ task['id'] }}"
+                        title="Reabrir">
+
+                        ↩
+
+                    </a>
+
+                {% endif %}
+
+                <a
+                    href="/delete/{{ task['id'] }}"
+                    title="Excluir"
+                    onclick="return confirm('Deseja excluir esta tarefa?')">
+
+                    🗑
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="card">
+
+            <h3>
+
+                Nenhuma tarefa encontrada
+
+            </h3>
+
+            <p>
+
+                Crie sua primeira tarefa usando o formulário acima.
+
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+
+const search =
+document.getElementById("search");
+
+search.addEventListener("keyup", () => {
+
+    const value =
+    search.value.toLowerCase();
+
+    document
+        .querySelectorAll(".task")
+        .forEach(task => {
+
+            const text =
+            task.innerText.toLowerCase();
+
+            task.style.display =
+            text.includes(value)
+            ? "flex"
+            : "none";
+        });
+
+});
+
+</script>
+
+</body>
+</html>

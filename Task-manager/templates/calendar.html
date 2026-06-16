@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Minha Agenda</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+    <div class="calendar-page">
+
+        <div class="calendar-header">
+
+            <div>
+
+                <div class="month-navigation">
+
+                    <a
+                        href="/?month={{ prev_month }}&year={{ prev_year }}"
+                        class="month-btn">
+                        ◀
+                    </a>
+
+                    <h1>
+                        📅 {{ month_name }} {{ year }}
+                    </h1>
+
+                    <a
+                        href="/?month={{ next_month }}&year={{ next_year }}"
+                        class="month-btn">
+                        ▶
+                    </a>
+
+                </div>
+
+                <p class="subtitle">
+                    Visualização mensal das suas tarefas
+                </p>
+
+            </div>
+
+            <a
+                href="/tasks"
+                class="new-task-btn">
+
+                ➕ Gerenciar tarefas
+
+            </a>
+
+        </div>
+
+        <div class="calendar-grid">
+
+            <div class="day-name">Domingo</div>
+            <div class="day-name">Segunda</div>
+            <div class="day-name">Terça</div>
+            <div class="day-name">Quarta</div>
+            <div class="day-name">Quinta</div>
+            <div class="day-name">Sexta</div>
+            <div class="day-name">Sábado</div>
+
+            {% for week in calendar %}
+
+                {% for day in week %}
+
+                    <div class="calendar-day">
+
+                        {% if day != 0 %}
+
+                            <div class="day-number">
+
+                                {{ day }}
+
+                            </div>
+
+                            {% if day in tasks_by_day %}
+
+                                {% for task in tasks_by_day[day] %}
+
+                                    <div
+                                        class="calendar-task {% if task['completed'] == 1 %}calendar-done{% endif %}"
+                                        style="
+                                            background:
+                                            {{ task['color'] }};
+                                        "
+                                    >
+
+                                        {% if task['completed'] == 1 %}
+                                            <span>✅</span>
+                                        {% endif %}
+
+                                        <strong>
+
+                                            {{ task['title'] }}
+
+                                        </strong>
+
+                                        {% if task['task_time'] %}
+
+                                            <small>
+
+                                                ⏰ {{ task['task_time'] }}
+
+                                            </small>
+
+                                        {% endif %}
+
+                                        {% if task['category'] %}
+
+                                            <small>
+
+                                                📂 {{ task['category'] }}
+
+                                            </small>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                {% endfor %}
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
